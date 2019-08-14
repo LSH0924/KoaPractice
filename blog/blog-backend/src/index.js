@@ -2,12 +2,11 @@ const Koa = require("koa");
 const app = new Koa();
 
 // 사용할 미들웨어 등록하기
-app.use((ctx, next) => {
+app.use(async(ctx, next) => {
     console.log(1);
     // 다음 순번의 미들웨어를 호출
-    next().then(() => {
-        console.log("모든 미들웨어가 끝났습니다.");
-    });
+    await next();
+    console.log("모든 미들웨어가 끝났습니다.");
 });
 
 app.use((ctx, next) => {
