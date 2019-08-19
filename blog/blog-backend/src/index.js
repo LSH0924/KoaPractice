@@ -1,25 +1,13 @@
 const Koa = require("koa");
 const Router = require("koa-router");
 
+const api = require("./api");
+
 const app = new Koa();
 const router = new Router();
 
-// 라우터 설정
-// home
-router.get('/', (ctx) => {
-    ctx.body = "home";
-});
-
-// about
-router.get('/about/:name?', (ctx) => {
-    const {name} = ctx.params;
-    ctx.body = name ? name + "을(를) 소개합니다." : "소개";
-});
-
-router.get('/posts', (ctx)=>{
-    const {id} = ctx.query;
-    ctx.body = id ? "Post#" + id : "포스트 아이디가 존재하지 않습니다.";
-});
+// 라우터에 api라우트 설정
+router.use("/api", api.routes());
 
 // app 인스턴스에 라우터 적용하기
 app.use(router.routes()).use(router.allowedMethods());
