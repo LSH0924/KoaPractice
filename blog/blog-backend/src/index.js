@@ -11,8 +11,14 @@ router.get('/', (ctx) => {
 });
 
 // about
-router.get('/about', (ctx) => {
-    ctx.body = "소개";
+router.get('/about/:name?', (ctx) => {
+    const {name} = ctx.params;
+    ctx.body = name ? name + "을(를) 소개합니다." : "소개";
+});
+
+router.get('/posts', (ctx)=>{
+    const {id} = ctx.query;
+    ctx.body = id ? "Post#" + id : "포스트 아이디가 존재하지 않습니다.";
 });
 
 // app 인스턴스에 라우터 적용하기
