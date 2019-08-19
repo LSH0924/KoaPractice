@@ -1,22 +1,22 @@
 const Koa = require("koa");
+const Router = require("koa-router");
+
 const app = new Koa();
+const router = new Router();
 
-// 사용할 미들웨어 등록하기
-app.use(async(ctx, next) => {
-    console.log(1);
-    // 다음 순번의 미들웨어를 호출
-    await next();
-    console.log("모든 미들웨어가 끝났습니다.");
+// 라우터 설정
+// home
+router.get('/', (ctx) => {
+    ctx.body = "home";
 });
 
-app.use((ctx, next) => {
-    console.log(2);
-    next();
+// about
+router.get('/about', (ctx) => {
+    ctx.body = "소개";
 });
 
-app.use((ctx) => {
-    ctx.body = "hello world!";
-});
+// app 인스턴스에 라우터 적용하기
+app.use(router.routes()).use(router.allowedMethods());
 
 // 40000번 포트 열기. 연결되면 console.log를 출력
 app.listen(4000, () => {
