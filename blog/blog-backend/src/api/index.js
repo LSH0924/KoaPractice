@@ -1,3 +1,4 @@
+require("../dbConnect");
 const Router = require("koa-router");
 
 const posts = require("./posts");
