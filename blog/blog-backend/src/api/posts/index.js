@@ -17,7 +17,6 @@ posts.get("/:id", postsCtrl.findPost);
 posts.delete("/:id", postsCtrl.deletePost);
 // request body 필요
 posts.post("/", postsCtrl.write);
-posts.put("/:id", postsCtrl.replace);
 posts.patch("/:id", postsCtrl.update);
 
 module.exports = posts;
