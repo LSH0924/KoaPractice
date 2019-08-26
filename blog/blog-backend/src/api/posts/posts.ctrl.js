@@ -4,7 +4,7 @@ const Post = require("models/post");
  * 포스트 작성하기
  * {title, body}
  */
-exports.write = async (ctx) => {
+exports.write = async ctx => {
     const {title, body, tags} = ctx.request.body;
     // 새 Post 인스턴스 만들기
     const post = new Post({title, body, tags});
@@ -20,7 +20,7 @@ exports.write = async (ctx) => {
  * 포스트 리스트
  * GET - /api/posts
  */
-exports.list = async (ctx) => {
+exports.list = async ctx => {
     try{
         const posts = await Post.find().exec();
         ctx.body = posts;
@@ -33,7 +33,19 @@ exports.list = async (ctx) => {
  * 특정 포스트 조회하기
  * GET - /api/posts/:id
  */
-exports.findPost = (ctx) => {
+exports.findPost = async ctx => {
+    const {id} = ctx.params;
+    try{
+        const post = await Post.findById(id).exec();
+        // id와 일치하는 포스트가 존재하지 않을 때
+        if(!post){
+            ctx.status = 404;
+            return;
+        }
+        ctx.body = post;
+    }catch(e){
+        ctx.throw(e, 500);
+    }
 };
 
 /**
@@ -41,12 +53,32 @@ exports.findPost = (ctx) => {
  * DELETE - /api/posts/:id
  */
 
-exports.deletePost = ctx => {
+exports.deletePost = async ctx => {
+    const {id} = ctx.params;
+    try{
+        await Post.findByIdAndRemove(id).exec();
+        ctx.status = 204;
+    }catch(e){
+        ctx.throw(e, 500);
+    }
+
 };
 
 /**
  * 포스트 수정 (특정 필드 변경)
  * PATCH - /api/posts
  */
-exports.update = ctx => {
+exports.update = async ctx => {
+    const {id} = ctx.params;
+    try{
+        // 세 번째 파라미터값을 설정해야 업데이트 된 객체를 반환한다. 설정하지 않으면 업데이트 전의 객체 반환
+        const post = await Post.findByIdAndUpdate(id, ctx.request.body, {new : true}).exec();
+        if(!post){
+            ctx.status = 404;
+            return;
+        }
+        ctx.body = post;
+    }catch(e){
+        ctx.throw(e, 500);
+    }
 };
