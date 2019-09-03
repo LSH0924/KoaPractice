@@ -1,4 +1,5 @@
 const Post = require("models/post");
+const Joi = require("joi");
 const {ObjectId} = require("mongoose").Types;
 
 /**
@@ -18,6 +19,25 @@ exports.checkObjectId = (ctx, next) => {
  * {title, body}
  */
 exports.write = async ctx => {
+
+    // requestBody값 검증용 스키마 만들기
+    const schema = Joi.object().keys({
+        title: Joi.string().required(), // required() -> 필수항목
+        body: Joi.string().required(),
+        tags: Joi.array().items(Joi.string()) // String 요소(item)로 가진 배열을 나타냄.
+    });
+
+    // Joi.validate()를 이용해 검증. 첫 번째 매개변수는 검증 대상 객체, 두 번째 매개변수는 검증용 스키마
+    const result = Joi.validate(ctx.request.body, schema);
+
+    // validate 결과에 에러 값이 존재할 경우
+    if(result.error){
+        ctx.status = 400; // 잘못된 요청
+        // 에러 내용을 body에 담아 반송
+        ctx.body = result.error;
+        return;
+    }
+
     const {title, body, tags} = ctx.request.body;
     // 새 Post 인스턴스 만들기
     const post = new Post({title, body, tags});
