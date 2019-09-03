@@ -66,6 +66,13 @@ exports.list = async ctx => {
         // _id를 기준으로 내림차순 정렬
         // limit()를 이용해 표시할 데이터 개수 제한하기
         const posts = await Post.find().sort({_id: -1}).limit(viewCount).skip((page-1)*viewCount).exec();
+        
+        // Post 모델과 연결된 콜렉션 안의 Document 개수를 가져온다.
+        // 책에서는 count()를 사용했지만, count()는 deprecated 되었으므로,
+        // Model.countDocuments() 나 Model.estimatedDocumentCount()를 사용
+        const postCount = await Post.countDocuments().exec();
+        // 커스텀 헤더를 설정하기 위해 ctx.set() 을 사용한다.
+        ctx.set("Last-Page", Math.ceil(postCount / viewCount));
         ctx.body = posts;
     }catch(e){
         ctx.throw(e, 500);
