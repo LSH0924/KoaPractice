@@ -13,10 +13,10 @@ const printInfo = (ctx) => {
 };
 
 posts.get("/", postsCtrl.list);
-posts.get("/:id", postsCtrl.findPost);
-posts.delete("/:id", postsCtrl.deletePost);
+posts.get("/:id", postsCtrl.checkObjectId,postsCtrl.findPost);
+posts.delete("/:id", postsCtrl.checkObjectId, postsCtrl.deletePost);
 // request body 필요
 posts.post("/", postsCtrl.write);
-posts.patch("/:id", postsCtrl.update);
+posts.patch("/:id", postsCtrl.checkObjectId, postsCtrl.update);
 
 module.exports = posts;

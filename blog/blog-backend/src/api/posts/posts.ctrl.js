@@ -1,4 +1,17 @@
 const Post = require("models/post");
+const {ObjectId} = require("mongoose").Types;
+
+/**
+ * 요청할 때 ID 검증하기
+ */
+exports.checkObjectId = (ctx, next) => {
+    const {id} = ctx.params;
+    if(!ObjectId.isValid(id)){
+        ctx.status = 400; // 잘못된 요청
+        return null;
+    }
+    return next();
+};
 
 /**
  * 포스트 작성하기
