@@ -65,7 +65,13 @@ exports.list = async ctx => {
     try{
         // _id를 기준으로 내림차순 정렬
         // limit()를 이용해 표시할 데이터 개수 제한하기
-        const posts = await Post.find().sort({_id: -1}).limit(viewCount).skip((page-1)*viewCount).exec();
+        const posts = await Post
+        .find()
+        .sort({_id: -1})
+        .limit(viewCount)
+        .skip((page-1)*viewCount)
+        .lean() // JSON형태로 가져오기
+        .exec();
         
         // Post 모델과 연결된 콜렉션 안의 Document 개수를 가져온다.
         // 책에서는 count()를 사용했지만, count()는 deprecated 되었으므로,
@@ -73,7 +79,14 @@ exports.list = async ctx => {
         const postCount = await Post.countDocuments().exec();
         // 커스텀 헤더를 설정하기 위해 ctx.set() 을 사용한다.
         ctx.set("Last-Page", Math.ceil(postCount / viewCount));
-        ctx.body = posts;
+
+        // 글자수를 제한시키기 위한 함수
+        const limitedBody = post => ({
+            ...post,
+            // 글자 수 100자 제한
+            body: post.body.length < 200 ? post.body : `${post.body.slice(0,100)}...` // 패턴화 된 문자열 사용
+        });
+        ctx.body = posts.map(limitedBody);
     }catch(e){
         ctx.throw(e, 500);
     }
