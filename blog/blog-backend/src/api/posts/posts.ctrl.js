@@ -54,8 +54,18 @@ exports.write = async ctx => {
  * GET - /api/posts
  */
 exports.list = async ctx => {
+    // String형태의 쿼리스트링을 받아 십진볍으로 변환. 값이 없을 경우 1을 넣는다.
+    const page = parseInt(ctx.query.page || 1, 10);
+    const viewCount = 3;
+
+    if(page < 1){
+        ctx.status = 400; // 0페이지는 잘못된 요청
+        return;
+    }
     try{
-        const posts = await Post.find().exec();
+        // _id를 기준으로 내림차순 정렬
+        // limit()를 이용해 표시할 데이터 개수 제한하기
+        const posts = await Post.find().sort({_id: -1}).limit(viewCount).skip((page-1)*viewCount).exec();
         ctx.body = posts;
     }catch(e){
         ctx.throw(e, 500);
